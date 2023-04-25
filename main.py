@@ -195,18 +195,18 @@ def draw_qr(qr, string):
             count += 1
         col -= 2
 
-    for row in qr:
-        for s in row:
-            if s == 0:
-                print('██', end='')
-            else:
-                print('  ', end='')
-        print()
+    # for row in qr:
+    #     for s in row:
+    #         if s == 0:
+    #             print('██', end='')
+    #         else:
+    #             print('  ', end='')
+    #     print()
 
     return qr
 
 
-def draw_qr_mask(qr):
+def draw_qr_mask0(qr):
     count = 0
     n = 21
     col = n - 1
@@ -264,16 +264,161 @@ def draw_qr_mask(qr):
             count += 1
         col -= 2
 
+# 111011111000100
+
+    # s2 = ''
+
+    qr = np.array(qr)
+    s1 = '1110111'
+    qr[20:13:-1, 8] = np.array(list(s1))
+    qr[8, :6] = np.array(list(s1[:6]))
+    s2 = '11000100'
+    qr[8, 13:21] = np.array(list(s2))
+    qr[:6, 8] = np.array(list(s2[2:][::-1]))
+    qr[7:9, 7:9] = np.array([[0, 1], [1, 1]])
+
+    qr = [list(a) for a in qr]
+    return qr
+
+
+
+def check_qr(qr):
+    n = len(qr)
+
+    count = 0
+    b_count = 0
+    w_count = 0
+
     for row in qr:
+        cur_line = 0
+        for i in range(1, n):
+            if row[i] == row[i - 1]:
+                cur_line += 1
+            else:
+                if cur_line >= 4:
+                    count += cur_line - 1
+                    # if row[i - 1] == 1:
+                    #     b_count += 1
+                    # else:
+                    #     w_count += 1
+                cur_line = 0
+        if cur_line >= 4:
+            count += cur_line - 1
+            # if row[i - 1] == 1:
+            #     b_count += 1
+            # else:
+            #     w_count += 1
+    print(count, b_count, w_count)
+
+
+    count1 = 0
+    b_count1 = 0
+    w_count1 = 0
+
+    for j in range(n):
+        cur_line = 0
+        for i in range(1, n):
+            if qr[i][j] == qr[i - 1][j]:
+                cur_line += 1
+            else:
+                if cur_line >= 4:
+                    count1 += cur_line - 1
+                    # if qr[i - 1][j] == 1:
+                    #     b_count1 += 1
+                    # else:
+                    #     w_count1 += 1
+                cur_line = 0
+        if cur_line >= 4:
+            count1 += cur_line - 1
+            # if qr[i - 1][j] == 1:
+            #     b_count1 += 1
+            # else:
+            #     w_count1 += 1
+    print(count1, b_count1, w_count1)
+
+    count2 = 0
+    b_count2 = 0
+    w_count2 = 0
+
+    for i in range(n - 1):
+        for j in range(n - 1):
+            if qr[i][j] == qr[i + 1][j] == qr[i + 1][j + 1] == qr[i][j + 1]:
+                # if qr[i][j]:
+                #     b_count2 += 1
+                # else:
+                #     w_count2 += 1
+                count2 += 3
+
+    print(count2, b_count2, w_count2)
+
+
+    a1 = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0]
+    a2 = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1]
+    # a3 = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0]
+    count3 = 0
+    for row in qr:
+        for i in range(n - 11):
+            if row[i:i+11] == a1:
+                count3 += 120
+            if row[i:i+11] == a2:
+                count3 += 120
+    print(count3)
+
+    qr = np.array(qr)
+    qr = qr.transpose()
+    qr = [list(a) for a in qr]
+
+    count4 = 0
+    for row in qr:
+        for i in range(n - 11):
+            if row[i:i+11] == a1:
+                count4 += 120
+            if row[i:i+11] == a2:
+                count4 += 120
+    print(count4)
+
+    print('Всего:', count + count1 + count2 + count3 + count4)
+    # print('Белые сегменты:', b_count + b_count1 + b_count2)
+    # print('Черные сегменты:', w_count + w_count1 + w_count2)
+    b_count = 0
+    w_count = 0
+    for row in qr:
+        b_count += row.count(1)
+        w_count += row.count(0)
+
+    pr = int(abs((b_count / 441) * 100 - 50)) * 2
+
+    itog = count + count1 + count2 + count3 + count4 + pr
+
+    return itog
+
+
+
+
+    
+
+
+
+
+    # print(count, b_count, w_count)
+        
+
+
+
+
+
+def print_in_console(qr):
+    print('██'* 23)
+    for row in qr:
+        print('██', end='')
         for s in row:
             if s == 0:
                 print('██', end='')
             else:
                 print('  ', end='')
+        print('██', end='')
         print()
-
-
-
+    print('██'* 23)
 
 
 
@@ -308,7 +453,10 @@ def main():
 
     qr = draw_qr(qr, string)
 
-    draw_qr_mask(qr)
+    qr = draw_qr_mask0(qr)
+
+    print_in_console(qr)
+    check_qr(qr)
 
 
 
